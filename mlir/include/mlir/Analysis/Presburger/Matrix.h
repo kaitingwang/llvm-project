@@ -58,6 +58,35 @@ public:
   /// Return the identity matrix of the specified dimension.
   static Matrix identity(unsigned dimension);
 
+  bool isIdentityWithZeroRows() const {
+    if (nRows < nColumns)
+      return false;
+    for (unsigned i = 0; i < nRows; i++) {
+      if (i < nColumns) { // ensure identity
+        for (unsigned j = 0; j < nColumns; j++) {
+          if (i == j && at(i, j) != 1)
+            return false;
+          else if (i != j && at(i, j) != 0)
+            return false;
+        }
+      } else { // ensure extra rows are all zero
+        for (unsigned j = 0; j < nColumns; j++)
+          if (at(i, j) != 0)
+            return false;
+      }
+    }
+    return true;
+  }
+  bool isEmpty() const {
+    for (unsigned i = 0; i < nRows; i++) {
+      for (unsigned j = 0; j < nColumns; j++) {
+        if (at(i, j) != 0)
+          return false;
+      }
+    }
+    return true;
+  }
+
   /// Access the element at the specified row and column.
   T &at(unsigned row, unsigned column) {
     assert(row < nRows && "Row outside of range");

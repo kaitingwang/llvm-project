@@ -1,0 +1,1 @@
+void jacobi2d(int var3, int var4, DATA_TYPE POLYBENCH_2D(var1, N, N, var4, var4), DATA_TYPE POLYBENCH_2D(var2, N, N, var4, var4));

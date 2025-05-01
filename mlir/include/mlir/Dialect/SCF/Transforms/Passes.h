@@ -65,6 +65,9 @@ std::unique_ptr<Pass> createForallToParallelLoopPass();
 // Creates a pass which lowers for loops into while loops.
 std::unique_ptr<Pass> createForToWhileLoopPass();
 
+// Creates a pass which lowers for loops into parallel loops.
+std::unique_ptr<Pass> createForToParallelLoopPass();
+
 //===----------------------------------------------------------------------===//
 // Registration
 //===----------------------------------------------------------------------===//

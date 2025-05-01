@@ -158,4 +158,26 @@ def SCFForToWhileLoop : Pass<"scf-for-to-while"> {
   }];
 }
 
+def SCFForToParallelLoop : Pass<"scf-for-to-parallel"> {
+  let summary = "Convert SCF for loops to SCF parallel loops";
+  let constructor = "mlir::createForToParallelLoopPass()";
+  let description = [{
+    This pass transforms SCF.ForOp operations to SCF.ParallelOp. 
+
+    ```mlir
+    # Before:
+      scf.for %i = %c0 to %arg1 step %c1 {
+        %0 = arith.addi %arg2, %arg2 : i32
+        memref.store %0, %arg0[%i] : memref<?xi32>
+      }
+
+    # After:
+      scf.parallel (%i) = (%c0) to (%arg1) step (%c1) {
+        %0 = arith.addi %arg2, %arg2 : i32
+        memref.store %0, %arg0[%i] : memref<?xi32>
+      }
+    ```
+  }];
+}
+
 #endif // MLIR_DIALECT_SCF_PASSES

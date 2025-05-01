@@ -408,6 +408,39 @@ def AffineExpandIndexOps : Pass<"affine-expand-index-ops"> {
   let constructor = "mlir::affine::createAffineExpandIndexOpsPass()";
 }
 
+def PolyTool : Pass<"polytool", "ModuleOp"> {
+  let summary = "Implementation of the new design for the tool";
+  let constructor = "mlir::affine::createPolyToolPass()";
+  let options = [
+      Option<"parallelDimensions", "parallel-dimensions", "int",
+           /*default=*/"0",
+           "number of dimensions to run in parallel">,
+      Option<"noThreadLocals", "no-thread-local", "bool", "false", "Do not use thread local in the definition of variables">,
+      Option<"polybenchCodeGen", "polybench-codegen", "bool", "false", "Force certain output C-files to get generated with headers that match polybench">,
+      Option<"codeGenOutputFile", "codegen-output-file", "std::string", "\"\"", "Output generated C-code to a given file">
+  ];
+}
+
+def ValidatorArrayExpand : Pass<"validator-array-expand", "func::FuncOp"> {
+  let summary = "Expand the array marked with a schedule.expand integer array attribute";
+  let description = [{
+    Target allocas must be marked with a schedule.expand attribute with an array attribute as its value.
+
+    For example, 
+    %a = memref.alloca() { schedule.expand = [1024, 1024] } : memref<1xf32>
+    affine.for i ... {
+      affine.for j ... {
+        affine.for k ... {
+          affine.load %a[0] ...
+        }
+      }
+    }
+    This affine.load of %a will become a affine.load of %a[i, j], and %a will become memref<1024x1024xf32>
+  }];
+  let constructor = "mlir::affine::createValidatorArrayExpandPass()";
+}
+
+
 def AffineExpandIndexOpsAsAffine : Pass<"affine-expand-index-ops-as-affine"> {
   let summary = "Lower affine operations operating on indices into affine.apply operations";
   let constructor = "mlir::affine::createAffineExpandIndexOpsAsAffinePass()";

@@ -1429,7 +1429,8 @@ def ConvertVectorToSPIRV : Pass<"convert-vector-to-spirv"> {
   let dependentDialects = ["spirv::SPIRVDialect"];
 }
 
-//===----------------------------------------------------------------------===//
+
+
 // VectorToXeGPU
 //===----------------------------------------------------------------------===//
 

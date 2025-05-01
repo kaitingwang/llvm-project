@@ -1,0 +1,1 @@
+void  covariance(int m, int n, DATA_TYPE float_n, DATA_TYPE POLYBENCH_2D(data,N,M,n,m), DATA_TYPE POLYBENCH_2D(cov,M,M,m,m), DATA_TYPE POLYBENCH_1D(mean,M,m));

@@ -70,6 +70,14 @@ bool LLVM_ATTRIBUTE_UNUSED isPerfectlyNested(ArrayRef<AffineForOp> loops);
 void getPerfectlyNestedLoops(SmallVectorImpl<AffineForOp> &nestedLoops,
                              AffineForOp root);
 
+/// Get perfectly nested sequence of loops starting at root of loop nest
+/// (the first op being another AffineFor, and the second op - a terminator).
+/// A loop is perfectly nested iff: the first op in the loop's body is another
+/// AffineForOp, and the second op is a terminator). This function is
+/// specifically used for the tile operater in the Transform Dialect
+void getPerfectlyNestedLoopsTransform(SmallVectorImpl<AffineForOp> &nestedLoops,
+                                      AffineForOp root, unsigned num_loops);
+
 /// Unrolls and jams this loop by the specified factor. `forOp` can be a loop
 /// with iteration arguments performing supported reductions and its inner loops
 /// can have iteration arguments. Returns success if the loop is successfully

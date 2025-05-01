@@ -1,0 +1,1 @@
+void durbin(int n, DATA_TYPE POLYBENCH_1D(r,N,n), DATA_TYPE POLYBENCH_1D(y,N,n));

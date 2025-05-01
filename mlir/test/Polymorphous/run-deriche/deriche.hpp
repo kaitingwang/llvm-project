@@ -1,0 +1,1 @@
+void deriche(int var1, int var2, DATA_TYPE var3, DATA_TYPE POLYBENCH_2D(var4, W, H, var1, var2), DATA_TYPE POLYBENCH_2D(var5, W, H, var1, var2), DATA_TYPE POLYBENCH_2D(var6, W, H, var1, var2), DATA_TYPE POLYBENCH_2D(var7, W, H, var1, var2));

@@ -17,6 +17,9 @@
 #include "mlir/Transforms/DialectConversion.h"
 
 #include "mlir/Dialect/Transform/Interfaces/TransformTypeInterfaces.h.inc"
+#include "mlir/Analysis/Presburger/Simplex.h"
+#include "mlir/Dialect/Affine/PolyToolCorrectionUtils.h"
+#include "mlir/Dialect/Affine/IR/AffineOps.h"
 
 namespace mlir {
 namespace transform {
@@ -380,6 +383,7 @@ public:
     friend class transform::TransformState;
   };
   friend class RegionScope;
+  friend class ValidatorTransformState;
 
   /// Base class for TransformState extensions that allow TransformState to
   /// contain user-specified information in the state object. Clients are
@@ -808,6 +812,58 @@ private:
   /// The top-level region scope. The first (bottom) element of `regionStack`
   /// is the top-level region scope object.
   std::unique_ptr<RegionScope> topLevelRegionScope;
+};
+
+LogicalResult validatorApplyTransforms(
+    Operation *payloadRoot, TransformOpInterface transform,
+    const RaggedArray<MappedValue> &extraMapping = {},
+    const TransformOptions &options = TransformOptions(),
+    DenseMap<Operation *, SmallVector<mlir::presburger::IntMatrix, 4>> *schedules =
+        NULL,
+    SmallVector<mlir::affine::dependenceEdge, 8> *dependenceEdges = NULL,
+    DenseMap<Operation *, SmallVector<int>> *constants = NULL,
+    DenseMap<mlir::affine::AffineForOp, mlir::affine::AffineForOp> *distributeParent = NULL,
+    DenseMap<Operation *, affine::StatementInfo> *StatementInfoMap = NULL,
+    DenseMap<Value, mlir::affine::Node*> *TgMap = NULL,
+    mlir::affine::Node* TgRoot = NULL,
+    DenseMap<Operation*, int> *mintile = NULL,
+    DenseMap<Operation*, int> *maxtile = NULL);
+
+class ValidatorTransformState : public TransformState {
+ 
+  friend LogicalResult validatorApplyTransforms(
+    Operation *, TransformOpInterface, const RaggedArray<MappedValue> &,
+    const TransformOptions &,
+    DenseMap<Operation *, SmallVector<mlir::presburger::IntMatrix, 4>> *schedules,
+    SmallVector<mlir::affine::dependenceEdge, 8> *dependenceEdges,
+    DenseMap<Operation *, SmallVector<int>> *constants,
+    DenseMap<mlir::affine::AffineForOp, mlir::affine::AffineForOp> *distributeParent, 
+    DenseMap<Operation *, affine::StatementInfo> *StatementInfoMap,
+    DenseMap<Value, mlir::affine::Node*> *TgMap,
+    mlir::affine::Node *TgRoot,
+    DenseMap<Operation*, int> *mintile,
+    DenseMap<Operation*, int> *maxtile);
+
+private:
+  ValidatorTransformState(Region *region, Operation *payloadRoot,
+                 const RaggedArray<MappedValue> &extraMappings = {},
+                 const TransformOptions &options = TransformOptions()) :
+    TransformState(region, payloadRoot, extraMappings, options) {}
+
+public:
+  DenseMap<Operation *, SmallVector<mlir::presburger::IntMatrix, 4>> *schedules;
+  SmallVector<mlir::affine::dependenceEdge, 8> *dependenceEdges;
+  DenseMap<Operation *, SmallVector<int>> *constants;
+  DenseMap<Operation*, int> *mintile;
+  DenseMap<Operation*, int> *maxtile;
+  DenseMap<mlir::affine::AffineForOp, mlir::affine::AffineForOp> *distributeParent;
+  DenseMap<Operation *, affine::StatementInfo> *StatementInfoMap;
+  DenseMap<Value, mlir::affine::Node*> *TgMap;
+  mlir::affine::Node *TgRoot;
+  //A map to reorder how many extra stmt added into forloop
+  DenseMap<mlir::affine::AffineForOp, SmallVector<mlir::affine::AffineForOp>> fusemap;
+  DenseMap<mlir::affine::AffineForOp, SmallVector<Operation*>> fuseintomap;
+  DenseMap<mlir::affine::AffineForOp, SmallVector<mlir::affine::AffineForOp>> fusedmap;
 };
 
 /// Local mapping between values defined by a specific op implementing the

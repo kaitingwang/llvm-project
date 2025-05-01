@@ -162,7 +162,7 @@ static bool isFusionLegal(ParallelOp firstPloop, ParallelOp secondPloop,
 
 /// Prepends operations of firstPloop's body into secondPloop's body.
 /// Updates secondPloop with new loop.
-static void fuseIfLegal(ParallelOp firstPloop, ParallelOp &secondPloop,
+bool mlir::scf::fuseIfLegal(ParallelOp firstPloop, ParallelOp &secondPloop,
                         OpBuilder builder,
                         llvm::function_ref<bool(Value, Value)> mayAlias) {
   Block *block1 = firstPloop.getBody();
@@ -172,14 +172,14 @@ static void fuseIfLegal(ParallelOp firstPloop, ParallelOp &secondPloop,
 
   if (!isFusionLegal(firstPloop, secondPloop, firstToSecondPloopIndices,
                      mayAlias))
-    return;
+    return false;
 
   DominanceInfo dom;
   // We are fusing first loop into second, make sure there are no users of the
   // first loop results between loops.
   for (Operation *user : firstPloop->getUsers())
     if (!dom.properlyDominates(secondPloop, user, /*enclosingOpOk*/ false))
-      return;
+      return false;
 
   ValueRange inits1 = firstPloop.getInitVals();
   ValueRange inits2 = secondPloop.getInitVals();
@@ -229,6 +229,7 @@ static void fuseIfLegal(ParallelOp firstPloop, ParallelOp &secondPloop,
   firstPloop.erase();
   secondPloop.erase();
   secondPloop = newSecondPloop;
+  return true;
 }
 
 void mlir::scf::naivelyFuseParallelOps(

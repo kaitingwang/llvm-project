@@ -867,6 +867,33 @@ void mlir::affine::getPerfectlyNestedLoops(
   }
 }
 
+/// Get perfectly nested sequence of loops starting at root of loop nest
+/// (the first op being another AffineFor, and the second op - a terminator).
+/// A loop is perfectly nested iff: the first op in the loop's body is another
+/// AffineForOp, and the second op is a terminator). This function is
+/// specifically for the Transform Loop Tiling Op
+void mlir::affine::getPerfectlyNestedLoopsTransform(
+    SmallVectorImpl<AffineForOp> &nestedLoops, AffineForOp root, unsigned num_loops) {
+  // bool tileEnd = false;
+  unsigned counter = 0;
+  for (unsigned i = 0; i < std::numeric_limits<unsigned>::max(); ++i) {
+    auto attrs = root.getOperation()->getAttrs();
+    nestedLoops.push_back(root);
+    counter++;
+    // for (auto attr = attrs.begin(); attr != attrs.end() && !tileEnd; attr++) {
+    //   if (attr->getName().str() == "tileEnd") tileEnd = true;
+    // }
+    // if(tileEnd) return;
+    Block &body = root.getRegion().front();
+    if (body.begin() != std::prev(body.end(), 2))
+      return;
+    root = dyn_cast<AffineForOp>(&body.front());
+    if (!root)
+      return;
+    if(counter == num_loops) return;
+  }
+}
+
 /// Identify valid and profitable bands of loops to tile. This is currently just
 /// a temporary placeholder to test the mechanics of tiled code generation.
 /// Returns all maximal outermost perfect loop nests to tile.

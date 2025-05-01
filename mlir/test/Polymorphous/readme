@@ -1,0 +1,14 @@
+Instructions for testing the Polymorphous:
+
+1) Make sure that you update your path so that it does point to where you have installed your mlir-affine-validator:
+> export PATH=(PATH to the bin):$PATH
+
+2) Go inside any folder that you wish to test
+> cd run-lu
+
+3) run the following command to check the correctness of the code:
+> make clean debug
+
+4) run the following command to check the performance of your optimization:
+> make clean profile
+

@@ -15,6 +15,7 @@
 #define MLIR_DIALECT_AFFINE_PASSES_H
 
 #include "mlir/Pass/Pass.h"
+#include <string>
 #include <limits>
 
 namespace mlir {
@@ -116,6 +117,12 @@ std::unique_ptr<OperationPass<func::FuncOp>> createPipelineDataTransferPass();
 /// operations (not necessarily restricted to Affine dialect).
 std::unique_ptr<Pass> createAffineExpandIndexOpsPass();
 
+/// Create the PolyTool pass
+std::unique_ptr<Pass> createPolyToolPass();
+std::unique_ptr<Pass> createPolyToolPass(int parallelDimensions, bool noThreadLocals, bool polybenchCodeGen, std::string codeGenOutputFile);
+
+/// Create Array Expansion Pass
+std::unique_ptr<OperationPass<func::FuncOp>> createValidatorArrayExpandPass();
 /// Creates a pass to expand affine index operations into affine.apply
 /// operations.
 std::unique_ptr<Pass> createAffineExpandIndexOpsAsAffinePass();

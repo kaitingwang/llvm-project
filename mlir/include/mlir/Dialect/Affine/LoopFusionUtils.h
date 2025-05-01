@@ -161,6 +161,12 @@ void gatherProducerConsumerMemrefs(ArrayRef<Operation *> srcOps,
                                    ArrayRef<Operation *> dstOps,
                                    DenseSet<Value> &producerConsumerMemrefs);
 
+/// Helper to check if a loop is perfectly nested up to a depth
+bool isPerfectlyNestedLoopOfDepth(AffineForOp loop, int64_t depth);
+
+/// Helper to check if a loop is perfectly nested up to a depth
+bool hasSameBoundsUpToDepth(AffineForOp op1, AffineForOp op2, int64_t depth);
+
 } // namespace affine
 } // namespace mlir
 

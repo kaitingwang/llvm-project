@@ -41,6 +41,7 @@
 #include "mlir/Dialect/Tensor/Extensions/AllExtensions.h"
 #include "mlir/Dialect/Tensor/TransformOps/TensorTransformOps.h"
 #include "mlir/Dialect/Transform/DebugExtension/DebugExtension.h"
+#include "mlir/Dialect/Schedule/TransformOps/ValidatorTransformOps.h"
 #include "mlir/Dialect/Transform/IRDLExtension/IRDLExtension.h"
 #include "mlir/Dialect/Transform/LoopExtension/LoopExtension.h"
 #include "mlir/Dialect/Transform/PDLExtension/PDLExtension.h"
@@ -87,6 +88,7 @@ inline void registerAllExtensions(DialectRegistry &registry) {
   memref::registerTransformDialectExtension(registry);
   nvgpu::registerTransformDialectExtension(registry);
   scf::registerTransformDialectExtension(registry);
+  validator::registerTransformDialectExtension(registry);
   sparse_tensor::registerTransformDialectExtension(registry);
   tensor::registerTransformDialectExtension(registry);
   transform::registerDebugExtension(registry);

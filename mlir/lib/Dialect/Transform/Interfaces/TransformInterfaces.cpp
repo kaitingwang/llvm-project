@@ -8,6 +8,7 @@
 
 #include "mlir/Dialect/Transform/Interfaces/TransformInterfaces.h"
 
+#include "mlir/Dialect/Affine/LabelChain.h"
 #include "mlir/IR/Diagnostics.h"
 #include "mlir/IR/Operation.h"
 #include "mlir/IR/PatternMatch.h"
@@ -1993,6 +1994,32 @@ LogicalResult transform::detail::verifyTransformOpInterface(Operation *op) {
 //===----------------------------------------------------------------------===//
 // Entry point.
 //===----------------------------------------------------------------------===//
+LogicalResult transform::validatorApplyTransforms(
+    Operation *payloadRoot, TransformOpInterface transform,
+    const RaggedArray<MappedValue> &extraMapping,
+    const TransformOptions &options,
+    DenseMap<Operation *, SmallVector<mlir::presburger::IntMatrix, 4>> *schedules,
+    SmallVector<mlir::affine::dependenceEdge, 8> *dependenceEdges,
+    DenseMap<Operation *, SmallVector<int>> *constants,
+    DenseMap<mlir::affine::AffineForOp, mlir::affine::AffineForOp> *distributeParent,
+    DenseMap<Operation *, affine::StatementInfo> *StatementInfoMap,
+    DenseMap<Value, mlir::affine::Node*> *TgMap,
+    mlir::affine::Node *TgRoot,
+    DenseMap<Operation *, int> *mintile,
+    DenseMap<Operation *, int> *maxtile) {
+  ValidatorTransformState state(transform->getParentRegion(), payloadRoot,
+                                extraMapping, options);
+  state.schedules = schedules;
+  state.dependenceEdges = dependenceEdges;
+  state.distributeParent = distributeParent;
+  state.StatementInfoMap = StatementInfoMap;
+  state.TgMap = TgMap;
+  state.TgRoot = TgRoot;
+  state.constants = constants;
+  state.mintile = mintile;
+  state.maxtile = maxtile;
+  return state.applyTransform(transform).checkAndReport();
+}
 
 LogicalResult transform::applyTransforms(
     Operation *payloadRoot, TransformOpInterface transform,

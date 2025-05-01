@@ -1,0 +1,1 @@
+void symm(int var1, int var2, DATA_TYPE var3, DATA_TYPE var4, DATA_TYPE POLYBENCH_2D(var5,M,N,var1,var2), DATA_TYPE POLYBENCH_2D(var6,M,M,var1,var1), DATA_TYPE POLYBENCH_2D(var7,M,N,var1,var2));

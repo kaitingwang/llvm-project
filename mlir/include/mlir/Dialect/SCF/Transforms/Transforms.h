@@ -22,6 +22,7 @@ class Region;
 class RewriterBase;
 class Operation;
 class Value;
+class OpBuilder;
 
 namespace scf {
 
@@ -45,6 +46,9 @@ LogicalResult forallToParallelLoop(RewriterBase &rewriter, ForallOp forallOp,
 /// Fuses all adjacent scf.parallel operations with identical bounds and step
 /// into one scf.parallel operations. Uses a naive aliasing and dependency
 /// analysis.
+bool fuseIfLegal(ParallelOp firstPloop, ParallelOp& secondPloop, OpBuilder b,
+                 llvm::function_ref<bool(Value, Value)> mayAlias);
+
 /// User can additionally customize alias checking with `mayAlias` hook.
 /// `mayAlias` must return false if 2 values are guaranteed to not alias.
 void naivelyFuseParallelOps(Region &region,

@@ -656,3 +656,39 @@ void mlir::affine::gatherProducerConsumerMemrefs(
       if (srcStoreMemRefs.count(loadOp.getMemRef()) > 0)
         producerConsumerMemrefs.insert(loadOp.getMemRef());
 }
+
+/// Helper to check if a loop is perfectly nested up to a depth
+/// so if we have depth 3, we need for {for {for {}}}
+bool mlir::affine::isPerfectlyNestedLoopOfDepth(AffineForOp loop, int64_t depth) {
+  Operation *curOp = &*(loop.getBody()->begin());
+  int i = 1;
+  while (i < depth) {
+    i++;
+    AffineForOp curLoop = dyn_cast<AffineForOp>(curOp);
+    // if the first op of the body is not a for op, loop is not perfectly nested
+    if (!curLoop)
+      return false;
+
+    curOp = &*(curLoop.getBody()->begin());
+  }
+  return true;
+}
+
+/// Helper to check if 2 loop nests have the same bounds
+bool mlir::affine::hasSameBoundsUpToDepth(AffineForOp op1, AffineForOp op2,
+                                  int64_t depth) {
+  int i = 0;
+  AffineForOp curOp1 = op1;
+  AffineForOp curOp2 = op2;
+  while (i < depth) {
+    i++;
+
+    if (curOp1.getLowerBoundMap() != curOp2.getLowerBoundMap() ||
+        curOp1.getUpperBoundMap() != curOp2.getUpperBoundMap() ||
+        curOp1.getLowerBoundOperands() != curOp2.getLowerBoundOperands() ||
+        curOp1.getUpperBoundOperands() != curOp2.getUpperBoundOperands() ||
+        curOp1.getStep() != curOp2.getStep())
+      return false;
+  }
+  return true;
+}

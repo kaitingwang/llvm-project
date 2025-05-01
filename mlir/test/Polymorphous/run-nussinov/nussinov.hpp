@@ -1,0 +1,1 @@
+void nussinov(int var1, char POLYBENCH_1D(var2,N,var1), DATA_TYPE POLYBENCH_2D(var3,N,N,var2,var2));
